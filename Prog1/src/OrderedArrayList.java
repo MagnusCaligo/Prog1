@@ -22,26 +22,57 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 
 	@Override
 	public void insert(E obj) {
-		storage[currentSize++] = obj;
-		
+		if(this.isFull())
+			throw new RuntimeException();
+		int location = this.findInsertionPoint(obj, 0, currentSize-1);
+		for(int i = this.currentSize; i > location; i--)
+			storage[i] = storage[i -1];
+		storage[location] = obj;
+		this.currentSize++;
 	}
 
 	@Override
 	public E remove(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		if(index >= this.currentSize)
+			throw new RuntimeException();
+		E object = storage[index];
+		for(int i = index; i < this.currentSize-1; i++)
+			storage[i] = storage[i+1];
+		this.currentSize--;
+		return object;
 	}
 
 	@Override
 	public E remove(E obj) {
-		// TODO Auto-generated method stub
-		return null;
+		int location = this.find(obj);
+		if(location == -1)
+			return null;
+		E objectToRemove = storage[location];
+		for(int i = location; i < this.currentSize-1; i++)
+			storage[i] = storage[i+1];
+		this.currentSize--;
+		return objectToRemove;
+		
+	}
+	
+	private int binarySearch(E obj, int lo, int hi){
+		if(lo > hi){
+			if(((Comparable<E>)obj).compareTo(storage[lo])==0)
+				return lo;
+			return -1;
+		}
+		int mid = (lo+hi)/2;
+		if(((Comparable<E>)obj).compareTo(storage[mid])<=0)
+			return binarySearch(obj, lo, mid-1);
+		return binarySearch(obj, mid+1, hi);
 	}
 
 	@Override
 	public E removeMin() {
-		// TODO Auto-generated method stub
-		return null;
+		E obj = storage[0];
+		
+		
+		return obj;
 	}
 
 	@Override
@@ -64,8 +95,7 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 
 	@Override
 	public int find(E obj) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.binarySearch(obj, 0, this.currentSize-1);
 	}
 
 	@Override
@@ -103,7 +133,7 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 		int mid = (min + max)/2;
 		if(min > max)
 			return min; 
-		if(((Comparable<E>)obj).compareTo(storage[mid])<=0)
+		if(((Comparable<E>)obj).compareTo(storage[mid])>=0)
 			return findInsertionPoint(obj, mid+1, max);
 		return findInsertionPoint(obj, min, mid-1);
 	}
