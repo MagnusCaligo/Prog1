@@ -11,6 +11,9 @@ public interface OrderedListADT<E> extends Iterable<E> {
 //  Throws IndexOutOfBoundsException if the index does not map to a valid position within the list.
     public E remove(int index);
     
+//  Returns true if the list is full, otherwise false
+    public boolean isFull();
+    
 //  Removes and returns the parameter object obj from the list if the list contains it, null otherwise.
     public E remove(E obj);  
     

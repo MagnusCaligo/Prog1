@@ -1,12 +1,28 @@
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class OrderedArrayList<E> implements OrderedListADT<E>{
 	
-	private int curentSize;
+	private int currentSize;
+	private E[] storage;
+	private long sequenceNumber;
+	private int maxSize;
+	
+	public OrderedArrayList(int size){
+		this.maxSize = size;
+		storage = (E[]) new Object[size];
+		currentSize = 0;
+	}
+	
+	public String toString(){
+		return Arrays.toString(storage);
+	}
 
 	@Override
 	public void insert(E obj) {
-		// TODO Auto-generated method stub
+		storage[currentSize++] = obj;
 		
 	}
 
@@ -60,20 +76,17 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		this.currentSize = 0;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return !(this.currentSize>0);
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.currentSize;
 	}
 
 	@Override
@@ -81,24 +94,43 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 		return new IteratorHelper();
 	}
 	
+	@Override
+	public boolean isFull() {
+		return this.currentSize == this.maxSize;
+	}
+	
+	public int findInsertionPoint(E obj, int min, int max){
+		int mid = (min + max)/2;
+		if(min > max)
+			return min; 
+		if(((Comparable<E>)obj).compareTo(storage[mid])<=0)
+			return findInsertionPoint(obj, mid+1, max);
+		return findInsertionPoint(obj, min, mid-1);
+	}
+	
 	class IteratorHelper implements Iterator<E>{
 		private int iterIndex;
+		private long modCheck;
 		
 		public IteratorHelper(){
 			iterIndex = 0;
+			modCheck = sequenceNumber;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return iterIndex < curentSize;
+			if(modCheck != sequenceNumber) throw new ConcurrentModificationException();
+			return iterIndex < currentSize;
 		}
 
 		@Override
 		public E next() {
-			// TODO Auto-generated method stub
-			return null;
+			if(!hasNext()) throw new NoSuchElementException();
+			return storage[iterIndex++];
 		}
 		
 	}
+
+	
 
 }
