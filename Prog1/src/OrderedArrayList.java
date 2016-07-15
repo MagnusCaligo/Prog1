@@ -16,9 +16,6 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 		currentSize = 0;
 	}
 	
-	public String toString(){
-		return Arrays.toString(storage);
-	}
 
 	@Override
 	public void insert(E obj) {
@@ -57,7 +54,7 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 	
 	private int binarySearch(E obj, int lo, int hi){
 		if(lo > hi){
-			if(((Comparable<E>)obj).compareTo(storage[lo])==0)
+			if(lo < this.currentSize-1 && ((Comparable<E>)obj).compareTo(storage[lo])==0)
 				return lo;
 			return -1;
 		}
@@ -70,26 +67,31 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 	@Override
 	public E removeMin() {
 		E obj = storage[0];
-		
-		
+		for(int i = 0; i<this.currentSize; i++)
+			storage[i] = storage[i+1];
+		this.currentSize--;
 		return obj;
 	}
 
 	@Override
 	public E removeMax() {
-		// TODO Auto-generated method stub
-		return null;
+		E obj = storage[this.currentSize-1];
+		this.currentSize--;
+		return obj;
 	}
 
 	@Override
 	public E get(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		if(index >= this.currentSize || index < 0)
+			throw new IndexOutOfBoundsException();
+		return storage[index];
 	}
 
 	@Override
 	public E get(E obj) {
-		// TODO Auto-generated method stub
+		int location = this.binarySearch(obj, 0, this.currentSize-1);
+		if(location>=0)
+			return storage[location];
 		return null;
 	}
 
@@ -100,8 +102,7 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 
 	@Override
 	public boolean contains(E obj) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.binarySearch(obj, 0, this.currentSize -1) >= 0;
 	}
 
 	@Override
@@ -129,7 +130,7 @@ public class OrderedArrayList<E> implements OrderedListADT<E>{
 		return this.currentSize == this.maxSize;
 	}
 	
-	public int findInsertionPoint(E obj, int min, int max){
+	private int findInsertionPoint(E obj, int min, int max){
 		int mid = (min + max)/2;
 		if(min > max)
 			return min; 

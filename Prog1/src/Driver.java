@@ -13,8 +13,7 @@ public class Driver {
 		TestClass m = new TestClass();
 		m.test = 60;
 		a.insert(m);
-		System.out.println(a);
-		a.remove(m);
+		System.out.println(a.find(m));
 		System.out.println(a);
 
 	}
